@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	https://www.springframework.org/schema/beans/spring-beans.xsd
+	http://mybatis.org/schema/mybatis-spring 
+   http://mybatis.org/schema/mybatis-spring-1.2.xsd">
+	
+	<!-- Root Context: defines shared resources visible to all other web components
+	:데이터베이스 환경설정을 하는 파일 -->
+	
+	
+	<!-- 1. HikariCP 안에 있는 객체를 생성 == Connection 한개 -->
+	<!--"HikariConfig"라고 부른다 :HikariCP환경설정을 위한 객체-->
+	<bean  class="com.zaxxer.hikari.HikariConfig" id="hikariConfig">
+	<!-- 1)class만 잡으면 new HikariConfig()라는 의미
+		 2) id로 변수명 잡아줘야한다 -->
+		 
+		 <!-- bean: 객체 생성하는 또 다른 방법
+	  			HikariConfig hikariCOnfig =new HikariCOnfig();
+	  			hikariConfig.setXXX("XXXX");
+	  			hikariConfig.setXXX("XXXX");
+	  			hikariConfig.setXXX("XXXX");
+	  			hikariConfig.setXXX("XXXX");
+			ㄴ왜 이렇게 하는거죠 ? web.xml에 적혀있어요!		  -->
+	
+	<!-- 2. setter메서드는 어떻게하면사용가능할까? 
+			채워야할 fields가 4개(username,Url,passwoer)-->
+		<property name="username" value="root"/>
+		<property name="password" value="12345"/>
+		<property name="jdbcUrl" value="jdbc:mysql://127.0.0.1:3306"/>
+		<property name="driverClassName" value="com.mysql.cj.jdbc.Driver"/>
+	</bean>
+	
+	<!--  3.connection pool을 만들어주자!! 
+			:HikariDataSource : 위쪽에 있는  config 값을 기준으로 DBCP생성  -->
+			<bean class="com.zaxxer.hikari.HikariDataSource" id="hikariDataSource">
+			<constructor-arg ref="hikariConfig"/>
+			</bean>
+			
+	<!--  4.sqlSessionFactoryBean만들기 >>DAO에서 만들어야되는것 아니에요? 
+			:session 빌려오고 , 사용하고 ,반납하는 역할을 spring에서 다해줌
+			:mybatis-springlibrary 안쪽에 존재
+			-->
+	<bean class="org.mybatis.spring.SqlSessionFactoryBean">  <!-- id값 굳이 안줘도됨 -->
+		<property name="dataSource" ref="dataSource"/>
+	</bean>
+	<!-- 5. SqlSessionFactoryBean이 Mapper 인터페이스를 구현해야한다.
+	  		Mapper파일의 위치가 어디에 있는지 알려줘야한다. 
+	  		✨✨ Mapper 파일은 테이블 단위로 만들어서 여러개가 될 수있기 때문에 package 자체를 스캔하게 한다!
+	  		(빈 문법만 쓰고있다.)>>>schema2개 추가-->
+	
+	<mybatis-spring:scan base-package="com.smhrd.db"/>
+	
+	
+	
+	<!-- sql구문은 어디에 적나요 ? xml파일에 적을예정 -->
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+		
+</beans>
